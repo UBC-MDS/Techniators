@@ -5,8 +5,15 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import boto
-import altair as alt
 from wordcloud import WordCloud
+from tqdm import tqdm
+import re
+import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem.porter import PorterStemmer
 from PIL import Image
 
 # ==============================
@@ -20,6 +27,21 @@ def load_data():
 
 def data_preprocessing(text):
     preprocessed_text = text
+    return preprocessed_text
+
+def preprocess_text(text_data):
+    preprocessed_text = []
+    # from each sentence
+    for sentence in tqdm(text_data):
+        # Converts sentence to lowercase
+        sentence = sentence.lower()
+        # Removes all non-word and non-space characters
+        sentence = re.sub(r'[^\w\s]', '', sentence)
+        preprocessed_text.append(' '.join(token 
+                                            for token in str(sentence).split() 
+                                                if token not in stopwords.words('english')))
+                                                # Removes stopwords
+
     return preprocessed_text
 
 def read_model(url):
@@ -79,12 +101,15 @@ text_input = st.sidebar.text_area("Enter News Article (max {} characters):".form
 # submission trigger
 # ==============================
 if st.sidebar.button("Submit"):
-    st.write("Input Text:")
-    st.write(text_input)
-
-    processed_text = data_preprocessing(text_input)
-
     
-    # st.write("Word Cloud:")
-    # wc_plot = create_visualization(text_input)
-    # st.pyplot(wc_plot)
+    if text_input == '':
+        st.title("👈 Please input some text")
+    else:
+        
+        processed_text = preprocess_text([text_input])
+
+        st.write("Processed Text:")
+        st.write(processed_text[0])
+        # st.write("Word Cloud:")
+        # wc_plot = create_visualization(text_input)
+        # st.pyplot(wc_plot)
