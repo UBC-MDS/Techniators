@@ -4,8 +4,11 @@ numpy
 scikit-learn
 matplotlib
 seaborn
-yfinance
+boto3
 boto
+fsspec
+s3fs
+tqdm
+nltk
 wordcloud
 yellowbrick
-matplotlib
