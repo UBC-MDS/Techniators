@@ -5,6 +5,7 @@ scikit-learn
 matplotlib
 seaborn
 yfinance
-boto3
-fsspec
-s3fs
+boto
+wordcloud
+yellowbrick
+matplotlib
