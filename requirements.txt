@@ -5,7 +5,10 @@ scikit-learn
 matplotlib
 seaborn
 boto3
+boto
 fsspec
 s3fs
 tqdm
 nltk
+wordcloud
+yellowbrick
