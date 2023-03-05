@@ -8,6 +8,13 @@ import yfinance as yf
 import boto
 import altair as alt
 
+import os
+
+if os.environ.get('AWS_EC2_METADATA_DISABLED') is not None:
+    print("This script is running on an EC2 instance")
+else:
+    print("This script is not running on an EC2 instance")
+
 st.title('S&P 500 App')
 
 st.markdown("""
