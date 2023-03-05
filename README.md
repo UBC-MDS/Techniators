@@ -48,6 +48,7 @@ Once the app is running, you can:
 
 If you'd like to contribute to the Techniators - Fake News Detector application, follow these steps:
 
+0. Read out [Contributing](CONTRIBUTING.md) document
 1. Fork the repository
 2. Create a new branch for your feature: ```git checkout -b my-feature-branch```
 3. Make your changes and commit them: ```git commit -m "Add new feature"```
