@@ -1,0 +1,21 @@
+{
+    "AWSEBDockerrunVersion": "1",
+    "Image": {
+      "Name": "caesarwongw/streamlit-docker1:1",
+      "Update": "true"
+    },
+    "Ports": [
+      {
+        "ContainerPort": "8501"
+      }
+    ],
+    "Volumes": [
+      {
+        "HostDirectory": "/var/app/current/data",
+        "ContainerDirectory": "/app/data",
+        "ReadOnly": true
+      }
+    ],
+    "Logging": "/var/log/streamlit"
+  }
+  
