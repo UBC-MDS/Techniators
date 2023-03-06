@@ -4,20 +4,22 @@ This is a Streamlit web application that detects fake news articles using natura
 
 ## 📰 Demo
 
+![demo](img/demo.gif)
+
 ## 📊 Features
 
 The Fake News Detector app can:
 
 - ✅ Analyze the text of a news article and predict whether it is fake or real
-- ✅ Show the client the probability of the article being fake or real
+- ✅ Show the client the prediction result of the article being fake or real
 - ✅ Allow the client to input their own news article for analysis
-- ✅ Display a word cloud and word frequency plot from the input text
+- ✅ Display a word cloud and word frequency plot from the new article input
 
 ## Technologies
 
 This application was built using:
 
-- Python 3.8
+- Python
 - Streamlit
 - Scikit-learn
 - Natural Language Toolkit (NLTK)
@@ -27,6 +29,8 @@ This application was built using:
 
 ## Installation
 
+### Local
+
 To install and run the app locally, follow these steps:
 
 Clone the repository: git clone https://github.com/UBC-MDS/Techniators.git
@@ -34,6 +38,21 @@ Clone the repository: git clone https://github.com/UBC-MDS/Techniators.git
 Install the required packages: ```pip install -r requirements.txt```
 
 Start the app: ```streamlit run stream_app.py```
+
+### Docker
+
+To install and deploy the app on docker, follow these steps:
+
+Clone the repository: git clone https://github.com/UBC-MDS/Techniators.git
+
+Run docker commands:
+
+```{bash}
+docker build -t <image-name> . 
+docker run -p 8501:8501 <image-name>
+```
+
+*Note that the docker files are for reference, please input the corresponding docker image name.*
 
 ## Usage
 
@@ -54,6 +73,11 @@ If you'd like to contribute to the Techniators - Fake News Detector application,
 3. Make your changes and commit them: ```git commit -m "Add new feature"```
 4. Push your changes to your forked repository: ```git push origin my-feature-branch```
 5. Create a pull request from your branch to the main branch of the original repository
+
+## Special Thanks
+
+We would like to extend our most sincere thanks to the [HackHPC](http://hackhpc.org/) [Hack the Threat](https://hackhpc.github.io/HacktheThreat23/) hackathon organisers for providing us with the opportunity to participate part and showcase our project. We had a place to work together with people who shared our interests throughout the hackathon to accomplish a common objective. We appreciate the organisers' assistance and direction throughout the event.
+
 
 ## License
 
