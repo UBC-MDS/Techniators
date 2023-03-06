@@ -15,6 +15,10 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem.porter import PorterStemmer
 from PIL import Image
+from wordcloud import WordCloud, STOPWORDS
+from yellowbrick.text import FreqDistVisualizer
+from sklearn.feature_extraction.text import CountVectorizer
+
 
 # ==============================
 # Main functions
@@ -111,14 +115,45 @@ def read_model(url):
     return 0
 
 def create_wordCloud(text):
-    # word cloud
+    ''' 
+    A function to display plots given an English text input. 
+    '''
 
-    return plt
+    #To generate word cloud
+    words = " ".join([text])
+    wordcloud = WordCloud(max_font_size=40, 
+                          width=500, 
+                          height=400, 
+                          stopwords = STOPWORDS,
+                          max_words=100,
+                          min_word_length = 2,
+                          collocations=False)
+
+    return wordcloud.generate(words).to_image()
 
 def create_distribution(text):
-    # frequency plot
+    ''' 
+    A function to display frequency of top 20 words in text
+    '''
+    counts = {}
+    words = text.split()
 
-    return plt
+    for word in words:
+        if word in counts:
+            counts[word] += 1
+        else:
+            counts[word] = 1
+
+        freq_df = pd.DataFrame(counts).sort_values()
+
+        plt(freq_df)
+
+    return counts   
+
+    #Display highest frequency words in text
+    
+    
+    return visualizer.show()
 
 
 def model_predict():
