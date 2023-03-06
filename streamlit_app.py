@@ -98,10 +98,12 @@ def data_cleaning(real_df, fake_df):
     cols = cols[-1:] + cols[:-1] #reorder columns to "text_tile" comes first
     all_news = all_news[cols]
     
-    # Feature Engineering
-    
     return all_news
 
+
+def feature_engineering(full_df):
+    #Rename locally and add labels
+    all_news = full_df
 
 def read_model(url):
 
