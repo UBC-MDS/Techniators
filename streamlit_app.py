@@ -5,7 +5,7 @@ import base64
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-import boto
+import boto3
 from wordcloud import WordCloud
 from tqdm import tqdm
 import re
@@ -16,24 +16,42 @@ nltk.download("vader_lexicon")
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem.porter import PorterStemmer
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
+import io
+import joblib
+
 from PIL import Image
+
 from wordcloud import WordCloud, STOPWORDS
 from yellowbrick.text import FreqDistVisualizer
 from sklearn.feature_extraction.text import CountVectorizer
 from nltk.probability import FreqDist
 
+# first statement as streamlit page config
+st.set_page_config(page_title="Techniator - Fake News Detector",
+                   page_icon="img/sticker_icon.png")
+
+
 sid = SentimentIntensityAnalyzer()
 
+# will implement this to a config file in the future, temporary measure for now
+ENV='local' # 'AWS'
+if ENV == 'AWS':
+    s3 = boto3.client('s3')
+bucket_name = 'techniators-bucket'
 # ==============================
 # Main functions
 # ==============================
+
+# reference function for data loading
 @st.cache
 def load_data():
     real = pd.read_csv('https://media.githubusercontent.com/media/caesarw0/news-dataset/main/data/raw_data/True.csv')
     fake = pd.read_csv('https://media.githubusercontent.com/media/caesarw0/news-dataset/main/data/raw_data/Fake.csv')
     return real, fake
 
-
+# referernce function for data cleaning
 def data_cleaning(real_df, fake_df):
     #Rename locally and add labels
     real = real_df
@@ -138,10 +156,15 @@ def feature_engineering(full_df):
     return all_news
 
 
-def read_model(url):
+def read_model(url='output_model/model.joblib'):
 
-
-    return 0
+    if ENV == 'AWS':
+        file_key = url
+        obj = s3.get_object(Bucket=bucket_name, Key=file_key)
+        model = joblib.load(io.BytesIO(obj['Body'].read()), 'rb')
+    else:
+        model = joblib.load(url)
+    return model
 
 def create_wordCloud(text):
     ''' 
@@ -196,18 +219,10 @@ def create_distribution(text):
 
 
 
-def model_predict():
-    return 0
-
-
 # ==============================
 # main page
 # ==============================
-st.set_page_config(page_title="Techniator - Fake News Detector",
-                   page_icon="img/sticker_icon.png")
-
-# Display the image in the middle of the page
-image = Image.open("img/sticker_icon.png")
+# Display main page content
 st.title('Techniators 💻 Fake News Detector')
 
 st.markdown("""
@@ -221,6 +236,7 @@ This app receives client input and detect whether the news is fake or not.
 # ==============================
 # sidebar settings
 # ==============================
+image = Image.open("img/sticker_icon.png")
 st.sidebar.image(
     image,
     caption="Techniator - Fake News Detector",
@@ -233,6 +249,11 @@ max_chars = 6000  # limit text input char
 input_height = 300  # height of the text area
 text_input = st.sidebar.text_area("Enter News Article (max {} characters):".format(max_chars), max_chars=max_chars, height=input_height)
 
+
+# ==============================
+# model reading
+# ==============================
+model = read_model()
 # ==============================
 # submission trigger
 # ==============================
@@ -242,10 +263,14 @@ if st.sidebar.button("Submit"):
         st.title("👈 Please input some text")
     else:
         
-        processed_text = preprocess_text([text_input])
-
+        text_df = pd.DataFrame({'title_text': [text_input],
+                                'subject': ['']})
+        # perform feat_engineering on user input
+        text_df = feature_engineering(text_df)
         st.write("Processed Text:")
-        st.write(processed_text[0])
+        st.write(text_df)
+        
+        st.write(model.predict(text_df))
         # st.write("Word Cloud:")
         # wc_plot = create_visualization(text_input)
         # st.pyplot(wc_plot)
