@@ -21,28 +21,87 @@ from PIL import Image
 # ==============================
 @st.cache
 def load_data():
-    df = pd.read_csv('https://media.githubusercontent.com/media/caesarw0/news-dataset/main/data/raw_data/True.csv')
-    return df
+    real = pd.read_csv('https://media.githubusercontent.com/media/caesarw0/news-dataset/main/data/raw_data/True.csv')
+    fake = pd.read_csv('https://media.githubusercontent.com/media/caesarw0/news-dataset/main/data/raw_data/Fake.csv')
+    return real, fake
 
 
-def data_preprocessing(text):
-    preprocessed_text = text
-    return preprocessed_text
+def data_cleaning(real_df, fake_df):
+    #Rename locally and add labels
+    real = real_df
+    fake = fake_df
+    fake['label'] = 'fake'
+    real['label'] = 'real'
+    
+    #Strip columns from whitespace
+    cols = ['title', 'text', 'date']
+    real[cols] = real[cols].apply(lambda x: x.str.strip())
+    fake[cols] = fake[cols].apply(lambda x: x.str.strip())
+    
+    # Remove unecessary text from the beginning of the text column in real df.
+    real['text'] = real['text'].str.replace('^(.*?)?\s[-]', '', regex=True)
+    
+    # Combining datasets, replace empty cells with "NA" (they exist only text column) & drop these columns
+    all_news = pd.concat([real, fake])
+    all_news = all_news.replace(r'^\s*$', np.nan, regex=True)
+    all_news = all_news.dropna(subset=['text'])
+    
+    # Cleaning & Parse date column
+    match_condn = r'\b([0-9])\b'
+    replace_str = r'0\1'
+    all_news['date'] = all_news['date'].str.replace(match_condn, replace_str, regex=True)
 
-def preprocess_text(text_data):
-    preprocessed_text = []
-    # from each sentence
-    for sentence in tqdm(text_data):
-        # Converts sentence to lowercase
-        sentence = sentence.lower()
-        # Removes all non-word and non-space characters
-        sentence = re.sub(r'[^\w\s]', '', sentence)
-        preprocessed_text.append(' '.join(token 
-                                            for token in str(sentence).split() 
-                                                if token not in stopwords.words('english')))
-                                                # Removes stopwords
+    replacement = {
+    "^Jan\s": "January ",
+    "^Feb\s": "February ",
+    "^Mar\s": "March ",
+    "^Apr\s": "April ",
+    "^Jun\s": "June ",
+    "^Jul\s": "July ",
+    "^Aug\s": "August ",
+    "^Sep\s": "September ",
+    "^Oct\s": "October ",
+    "^Nov\s": "November ",
+    "^Dec\s": "December ",
+    "14[-]Feb[-]18$": "February 14, 2018",
+    "15[-]Feb[-]18$": "February 15, 2018",
+    "16[-]Feb[-]18$": "February 16, 2018",
+    "17[-]Feb[-]18$": "February 17, 2018",
+    "18[-]Feb[-]18$": "February 18, 2018",
+    "19[-]Feb[-]18$": "February 19, 2018",
+    }
 
-    return preprocessed_text
+    all_news['date'] = all_news['date'].replace(replacement, regex=True)
+
+    # Converting date column to datetime
+    all_news['date'] = pd.to_datetime(all_news['date'], format='%B %d, %Y', errors='coerce')
+    #This results in 10 empty date columns because they were not dates in the first place
+    
+    # Limiting categories of Subjects to only 2 (politicsNews and worldnews)
+    all_news.query("subject == 'left-news'")
+
+    subject_replace = {'News':'other', 
+                   'politics':'politicsNews', 
+                   'left-news' : 'other',
+                   'Government News': 'politicsNews',
+                   'US_News': 'politicsNews',
+                   'Middle-east': 'worldnews', 
+                      }
+
+    all_news = all_news.replace({"subject": subject_replace})
+    
+    # Combine title and text columns into one column and drop the individual ones 
+    all_news["title_text"] = all_news["title"].combine_first(all_news["text"])
+    all_news["title_text"] = all_news["title"] +" "+ all_news["text"]
+    all_news = all_news.drop(['title', 'text'], axis=1)
+    cols = all_news.columns.tolist()
+    cols = cols[-1:] + cols[:-1] #reorder columns to "text_tile" comes first
+    all_news = all_news[cols]
+    
+    # Feature Engineering
+    
+    return all_news
+
 
 def read_model(url):
 
