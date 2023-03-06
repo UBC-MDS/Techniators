@@ -172,7 +172,9 @@ def create_wordCloud(text):
     '''
 
     #To generate word cloud
-    words = " ".join([text])
+    text_list = text.tolist()
+
+    words = " ".join(text_list)
     wordcloud = WordCloud(max_font_size=40, 
                           width=500, 
                           height=400, 
@@ -180,18 +182,20 @@ def create_wordCloud(text):
                           max_words=100,
                           min_word_length = 2,
                           collocations=False)
-
-    return wordcloud.generate(words).to_image()
+    plt.figure(figsize=(15, 10))
+    plt.imshow(wordcloud.generate(words), interpolation='bilinear')
+    plt.axis('off')
+    plt.show()
+    return plt
 
 def create_distribution(text):
     ''' 
     A function to display frequency of top 20 words in text (string)
     '''
-
     # Clean text up to remove punctuation 
     skips = [".", ",", ";", ":", "'", '"', "\n", "!", "?", "(", ")", "@"]
     stop_words = set(stopwords.words('english'))
-        
+    text = re.sub(r'[^\w\s]', '', text)
     for ch in skips:
         text = text.replace(ch, "")
 
@@ -215,7 +219,8 @@ def create_distribution(text):
     plt.title("Top 20 most frequent words (without stopwords)")
     plt.xlabel("Count")
     plt.ylabel("Words")
-    return plt.show()
+    plt.show()
+    return plt
 
 
 
@@ -223,10 +228,10 @@ def create_distribution(text):
 # main page
 # ==============================
 # Display main page content
-st.title('Techniators 💻 Fake News Detector')
+st.title('Techniators Fake News Detector 📰')
 
 st.markdown("""
-This app receives client input and detect whether the news is fake or not.
+This app receives news article 🗞️ input and detects whether the news is fake or not.
 * **Python libraries:** base64, pandas, streamlit, numpy, matplotlib, seaborn
 * **Data source:** [Kaggle - Fake and Real News Dataset](https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset).
 """)
@@ -236,13 +241,10 @@ This app receives client input and detect whether the news is fake or not.
 # ==============================
 # sidebar settings
 # ==============================
-image = Image.open("img/sticker_icon.png")
-st.sidebar.image(
-    image,
-    caption="Techniator - Fake News Detector",
-    use_column_width=True,
-    output_format="JPEG" 
-)
+styled_image = f'<img src="https://raw.githubusercontent.com/UBC-MDS/Techniators/main/img/sticker_icon.png" style=" border-radius: 10px;width: 170px;margin-left: auto;margin-right: auto;display: block;">'
+
+st.sidebar.markdown(styled_image, unsafe_allow_html=True)
+
 st.sidebar.title("Input News Article")
 # input text area
 max_chars = 6000  # limit text input char
@@ -268,9 +270,17 @@ if st.sidebar.button("Submit"):
         # perform feat_engineering on user input
         text_df = feature_engineering(text_df)
         st.write("Processed Text:")
-        st.write(text_df)
+        st.write(text_df.drop(columns=['subject']).T)
         
+        # Get prediction
+        st.markdown("## Prediction:")
         st.write(model.predict(text_df))
-        # st.write("Word Cloud:")
-        # wc_plot = create_visualization(text_input)
-        # st.pyplot(wc_plot)
+
+        # Plot Word Cloud
+        st.markdown("## Word Cloud:")
+        wc_plot = create_wordCloud(text_df['title_text'])
+        st.pyplot(wc_plot)
+
+        # Plot Distribution
+        st.markdown("## Word Distribution:")
+        st.pyplot(create_distribution(text_df['title_text'].iloc[0]))
