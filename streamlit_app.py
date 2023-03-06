@@ -192,7 +192,6 @@ def create_distribution(text):
     plt.title("Top 20 most frequent words (without stopwords)")
     plt.xlabel("Count")
     plt.ylabel("Words")
-    plt.xticks(rotation=90)
     return plt.show()
 
 
