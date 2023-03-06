@@ -192,11 +192,10 @@ def create_distribution(text):
     ''' 
     A function to display frequency of top 20 words in text (string)
     '''
-
     # Clean text up to remove punctuation 
     skips = [".", ",", ";", ":", "'", '"', "\n", "!", "?", "(", ")", "@"]
     stop_words = set(stopwords.words('english'))
-        
+    text = re.sub(r'[^\w\s]', '', text)
     for ch in skips:
         text = text.replace(ch, "")
 
@@ -220,7 +219,8 @@ def create_distribution(text):
     plt.title("Top 20 most frequent words (without stopwords)")
     plt.xlabel("Count")
     plt.ylabel("Words")
-    return plt.show()
+    plt.show()
+    return plt
 
 
 
@@ -272,9 +272,15 @@ if st.sidebar.button("Submit"):
         st.write("Processed Text:")
         st.write(text_df.drop(columns=['subject']).T)
         
+        # Get prediction
+        st.markdown("## Prediction:")
         st.write(model.predict(text_df))
-        st.write("Word Cloud:")
+
+        # Plot Word Cloud
+        st.markdown("## Word Cloud:")
         wc_plot = create_wordCloud(text_df['title_text'])
         st.pyplot(wc_plot)
 
-        
+        # Plot Distribution
+        st.markdown("## Word Distribution:")
+        st.pyplot(create_distribution(text_df['title_text'].iloc[0]))
