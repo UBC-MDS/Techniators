@@ -1,3 +1,4 @@
+import string
 import streamlit as st
 import pandas as pd
 import base64
@@ -11,6 +12,7 @@ import re
 import nltk
 nltk.download('punkt')
 nltk.download('stopwords')
+nltk.download("vader_lexicon")
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem.porter import PorterStemmer
@@ -19,6 +21,7 @@ from wordcloud import WordCloud, STOPWORDS
 from yellowbrick.text import FreqDistVisualizer
 from sklearn.feature_extraction.text import CountVectorizer
 
+sid = SentimentIntensityAnalyzer()
 
 # ==============================
 # Main functions
@@ -95,7 +98,6 @@ def data_cleaning(real_df, fake_df):
     all_news = all_news.replace({"subject": subject_replace})
     
     # Combine title and text columns into one column and drop the individual ones 
-    all_news["title_text"] = all_news["title"].combine_first(all_news["text"])
     all_news["title_text"] = all_news["title"] +" "+ all_news["text"]
     all_news = all_news.drop(['title', 'text'], axis=1)
     cols = all_news.columns.tolist()
@@ -105,9 +107,35 @@ def data_cleaning(real_df, fake_df):
     return all_news
 
 
+def get_sentiment(text): #Adapted from DSCI 574
+    """
+    Returns the compound score representing the sentiment: -1 (most extreme negative) and +1 (most extreme positive)
+    The compound score is a normalized score calculated by summing the valence scores of each word in the lexicon.
+
+    Parameters:
+    ------
+    text: (str)
+    the input text
+
+    Returns:
+    -------
+    sentiment of the text: (str)
+    """
+    scores = sid.polarity_scores(text)
+    return scores["compound"]
+
 def feature_engineering(full_df):
-    #Rename locally and add labels
+    #Special Character, Uppercase letters and Sentiment Score
+    #Rename locally
     all_news = full_df
+    
+    full_list = string.ascii_uppercase + string.ascii_lowercase + string.digits + string.whitespace
+    all_news['special_char_count'] = all_news['title_text'].str.count(f'[^{re.escape(full_list)}]')
+    all_news['uppercase_letter_count'] = all_news['title_text'].str.findall(r'[A-Z]').str.len()
+    all_news = all_news.assign(sentiment_score=all_news["title_text"].apply(get_sentiment))
+    
+    return all_news
+
 
 def read_model(url):
 
