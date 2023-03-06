@@ -172,7 +172,9 @@ def create_wordCloud(text):
     '''
 
     #To generate word cloud
-    words = " ".join([text])
+    text_list = text.tolist()
+
+    words = " ".join(text_list)
     wordcloud = WordCloud(max_font_size=40, 
                           width=500, 
                           height=400, 
@@ -180,8 +182,11 @@ def create_wordCloud(text):
                           max_words=100,
                           min_word_length = 2,
                           collocations=False)
-
-    return wordcloud.generate(words).to_image()
+    plt.figure(figsize=(15, 10))
+    plt.imshow(wordcloud.generate(words), interpolation='bilinear')
+    plt.axis('off')
+    plt.show()
+    return plt
 
 def create_distribution(text):
     ''' 
@@ -223,10 +228,10 @@ def create_distribution(text):
 # main page
 # ==============================
 # Display main page content
-st.title('Techniators 💻 Fake News Detector')
+st.title('Techniators Fake News Detector 📰')
 
 st.markdown("""
-This app receives client input and detect whether the news is fake or not.
+This app receives news article 🗞️ input and detects whether the news is fake or not.
 * **Python libraries:** base64, pandas, streamlit, numpy, matplotlib, seaborn
 * **Data source:** [Kaggle - Fake and Real News Dataset](https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset).
 """)
@@ -268,9 +273,9 @@ if st.sidebar.button("Submit"):
         # perform feat_engineering on user input
         text_df = feature_engineering(text_df)
         st.write("Processed Text:")
-        st.write(text_df)
+        st.write(text_df.drop(columns=['subject']).T)
         
         st.write(model.predict(text_df))
-        # st.write("Word Cloud:")
-        # wc_plot = create_visualization(text_input)
-        # st.pyplot(wc_plot)
+        st.write("Word Cloud:")
+        wc_plot = create_wordCloud(text_df['title_text'])
+        st.pyplot(wc_plot)
