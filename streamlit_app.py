@@ -17,6 +17,11 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem.porter import PorterStemmer
 from PIL import Image
+from wordcloud import WordCloud, STOPWORDS
+from yellowbrick.text import FreqDistVisualizer
+from sklearn.feature_extraction.text import CountVectorizer
+from nltk.probability import FreqDist
+
 sid = SentimentIntensityAnalyzer()
 
 # ==============================
@@ -139,14 +144,56 @@ def read_model(url):
     return 0
 
 def create_wordCloud(text):
-    # word cloud
+    ''' 
+    A function to display plots given an English text input. 
+    '''
 
-    return plt
+    #To generate word cloud
+    words = " ".join([text])
+    wordcloud = WordCloud(max_font_size=40, 
+                          width=500, 
+                          height=400, 
+                          stopwords = STOPWORDS,
+                          max_words=100,
+                          min_word_length = 2,
+                          collocations=False)
+
+    return wordcloud.generate(words).to_image()
 
 def create_distribution(text):
-    # frequency plot
+    ''' 
+    A function to display frequency of top 20 words in text (string)
+    '''
 
-    return plt
+    # Clean text up to remove punctuation 
+    skips = [".", ",", ";", ":", "'", '"', "\n", "!", "?", "(", ")", "@"]
+    stop_words = set(stopwords.words('english'))
+        
+    for ch in skips:
+        text = text.replace(ch, "")
+
+    # Tokenize the text
+    tokens = word_tokenize(text.lower())
+
+    # Remove stopwords
+    stop_words = set(stopwords.words('english'))
+    filtered_tokens = [word for word in tokens if word not in stop_words]
+
+    # Create frequency distribution
+    fdist = nltk.FreqDist(filtered_tokens)
+
+    # Get top 20 most frequent words
+    top_words = fdist.most_common(20)
+    top_words.sort(key=lambda x: x[1], reverse=True) # Sort in descending order
+
+    # Create bar plot of top 20 most frequent words
+    plt.figure(figsize=(10, 6))
+    plt.barh([word[0] for word in top_words], [word[1] for word in top_words])
+    plt.title("Top 20 most frequent words (without stopwords)")
+    plt.xlabel("Count")
+    plt.ylabel("Words")
+    return plt.show()
+
 
 
 def model_predict():
