@@ -232,7 +232,6 @@ st.title('Techniators Fake News Detector 📰')
 
 st.markdown("""
 This app receives news article 🗞️ input and detects whether the news is fake or not.
-* **Python libraries:** base64, pandas, streamlit, numpy, matplotlib, seaborn
 * **Data source:** [Kaggle - Fake and Real News Dataset](https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset).
 """)
 
@@ -245,11 +244,11 @@ styled_image = f'<img src="https://raw.githubusercontent.com/UBC-MDS/Techniators
 
 st.sidebar.markdown(styled_image, unsafe_allow_html=True)
 
-st.sidebar.title("Input News Article")
+st.sidebar.title("Fake News Detector")
 # input text area
 max_chars = 6000  # limit text input char
 input_height = 300  # height of the text area
-text_input = st.sidebar.text_area("Enter News Article (max {} characters):".format(max_chars), max_chars=max_chars, height=input_height)
+text_input = st.sidebar.text_area("Enter News Article (max {} characters) 👇".format(max_chars), max_chars=max_chars, height=input_height)
 
 
 # ==============================
@@ -262,25 +261,30 @@ model = read_model()
 if st.sidebar.button("Submit"):
     
     if text_input == '':
-        st.title("👈 Please input some text")
+        st.title("👈 Please input some news article")
     else:
         
         text_df = pd.DataFrame({'title_text': [text_input],
                                 'subject': ['']})
         # perform feat_engineering on user input
         text_df = feature_engineering(text_df)
-        st.write("Processed Text:")
-        st.write(text_df.drop(columns=['subject']).T)
+        st.markdown("### 📨 Processed Text")
+        st.write(text_df.drop(columns=['subject']).T.rename(columns={0: 'Value'}))
         
         # Get prediction
-        st.markdown("## Prediction:")
-        st.write(model.predict(text_df))
+        st.markdown("### 🔖 Prediction")
+        y_pred = model.predict(text_df)
+        if y_pred == ['real']:
+            st.success("This is a Real News ✅")
+        else:
+            st.error("This is a Fake News ❌")
+        
 
         # Plot Word Cloud
-        st.markdown("## Word Cloud:")
+        st.markdown("### ☁️ Word Cloud")
         wc_plot = create_wordCloud(text_df['title_text'])
         st.pyplot(wc_plot)
 
         # Plot Distribution
-        st.markdown("## Word Distribution:")
+        st.markdown("### 📊 Word Distribution")
         st.pyplot(create_distribution(text_df['title_text'].iloc[0]))
