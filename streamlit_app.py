@@ -241,13 +241,10 @@ This app receives news article 🗞️ input and detects whether the news is fak
 # ==============================
 # sidebar settings
 # ==============================
-image = Image.open("img/sticker_icon.png")
-st.sidebar.image(
-    image,
-    caption="Techniator - Fake News Detector",
-    use_column_width=True,
-    output_format="JPEG" 
-)
+styled_image = f'<img src="https://raw.githubusercontent.com/UBC-MDS/Techniators/main/img/sticker_icon.png" style=" border-radius: 10px;width: 170px;margin-left: auto;margin-right: auto;display: block;">'
+
+st.sidebar.markdown(styled_image, unsafe_allow_html=True)
+
 st.sidebar.title("Input News Article")
 # input text area
 max_chars = 6000  # limit text input char
@@ -279,3 +276,5 @@ if st.sidebar.button("Submit"):
         st.write("Word Cloud:")
         wc_plot = create_wordCloud(text_df['title_text'])
         st.pyplot(wc_plot)
+
+        
