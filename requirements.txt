@@ -12,3 +12,5 @@ tqdm
 nltk
 wordcloud
 yellowbrick
+PIL
+datetime
