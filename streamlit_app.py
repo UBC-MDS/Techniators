@@ -94,7 +94,6 @@ def data_cleaning(real_df, fake_df):
     all_news = all_news.replace({"subject": subject_replace})
     
     # Combine title and text columns into one column and drop the individual ones 
-    all_news["title_text"] = all_news["title"].combine_first(all_news["text"])
     all_news["title_text"] = all_news["title"] +" "+ all_news["text"]
     all_news = all_news.drop(['title', 'text'], axis=1)
     cols = all_news.columns.tolist()
