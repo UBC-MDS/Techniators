@@ -37,7 +37,7 @@ Clone the repository: git clone https://github.com/UBC-MDS/Techniators.git
 
 Install the required packages: ```pip install -r requirements.txt```
 
-Start the app: ```streamlit run stream_app.py```
+Start the app: ```streamlit run streamlit_app.py```
 
 ### Docker
 
@@ -65,11 +65,11 @@ Once the app is running, you can:
 
 ## Contributing
 
-Team Members: Sarah Abdelazim, Lisa Sequeira, Caesar Wong
+Team Members: [Sarah Abdelazim](https://github.com/missarah96), [Lisa Sequeira](https://github.com/LisaSeq), [Caesar Wong](https://github.com/caesarw0)
 
 If you'd like to contribute to the Techniators - Fake News Detector application, follow these steps:
 
-0. Read out [Contributing](CONTRIBUTING.md) document
+0. Read our [Contributing](CONTRIBUTING.md) document
 1. Fork the repository
 2. Create a new branch for your feature: ```git checkout -b my-feature-branch```
 3. Make your changes and commit them: ```git commit -m "Add new feature"```
