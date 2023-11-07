@@ -41,18 +41,14 @@ Start the app: ```streamlit run streamlit_app.py```
 
 ### Docker
 
-To install and deploy the app on docker, follow these steps:
-
-Clone the repository: git clone https://github.com/UBC-MDS/Techniators.git
-
-Run docker commands:
+To install and launch the docker version of the streamlit application, follow the below steps:
 
 ```{bash}
-docker build -t <image-name> . 
-docker run -p 8501:8501 <image-name>
+docker pull caesarwongw/streamlit-docker1 
+docker run -p 8501:8501 caesarwongw/streamlit-docker1
 ```
 
-*Note that the docker files are for reference, please input the corresponding docker image name.*
+For more details on the Docker Image, checkout the [Docker Hub link](https://hub.docker.com/r/caesarwongw/streamlit-docker1).
 
 ## Usage
 

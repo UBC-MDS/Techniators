@@ -1,7 +1,7 @@
 streamlit
 pandas
 numpy
-scikit-learn
+scikit-learn==1.1.3
 matplotlib
 seaborn
 boto3
@@ -12,5 +12,5 @@ tqdm
 nltk
 wordcloud
 yellowbrick
-PIL
+Pillow
 datetime
